@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstddef> 
 
 namespace euclid {
@@ -17,6 +18,14 @@ class SPSCRingBuffer {
   private:
     static constexpr std::size_t increment(std::size_t i) noexcept {
       return (i+1) & mask_;
+    }
+
+    T* at_ptr(std::size_t i) noexcept {
+      return std::launder(reinterpret_cast<T*>(&storage_[i]));
+    }
+
+    const T* at_ptr(std::size_t i) const noexcept {
+      return std::launder(reinterpret_cast<const T*>(&storage_[i]));
     }
 
   private:
