@@ -7,7 +7,6 @@
 #include <utility>
 #include <memory>
 
-
 namespace euclid {
 namespace spring {
 
