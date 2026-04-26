@@ -17,17 +17,16 @@ enum class EventType : std::uint8_t {
 enum class Side : std::uint8_t {
   Buy = 0,
   Sell = 1,
-  Unknown = 2
 };
 
-struct QuoteEvent {
+struct Quote {
   Price bid_price;
   Price ask_price;
   Quantity bid_size;
   Quantity ask_size;
 };
 
-struct TradeEvent {
+struct Trade {
   Price trade_price;
   Quantity trade_size;
   Side aggressor_side;
@@ -39,10 +38,9 @@ struct MarketEvent {
   std::uint64_t recv_ts_ns;      
   InstrumentId instrument_id;
   EventType type;
-  
   union {
-    QuoteEvent quote;
-    TradeEvent trade;
+    Quote quote;
+    Trade trade;
   };
 };
 
