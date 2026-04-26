@@ -31,6 +31,8 @@ class SPSCRingBuffer {
 
     SPSCRingBuffer(const SPSCRingBuffer&) = delete;
     SPSCRingBuffer& operator=(const SPSCRingBuffer&) = delete;
+    SPSCRingBuffer(SPSCRingBuffer&&) = delete;
+    SPSCRingBuffer& operator=(SPSCRingBuffer&&) = delete;
 
     template <typename U>
     bool try_push(U&& value) {
