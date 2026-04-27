@@ -37,7 +37,7 @@ struct MarketEvent {
   std::uint64_t exchange_ts_ns;  
   std::uint64_t recv_ts_ns;      
   InstrumentId instrument_id;
-  EventType type;
+  EventType event_type;
   union {
     Quote quote;
     Trade trade;
