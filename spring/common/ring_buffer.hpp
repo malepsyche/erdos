@@ -18,9 +18,10 @@ class SPSCRingBuffer {
  public:
   SPSCRingBuffer() = default;
   ~SPSCRingBuffer() {
-    if (!std::is_trivially_destructible_v<T>) {
+    if constexpr (!std::is_trivially_destructible_v<T>) {
       std::size_t head = head_.load(std::memory_order_relaxed);
       const std::size_t tail = tail_.load(std::memory_order_relaxed);
+      
       while (head != tail) {
         T* slot = ptr_at(head);
         std::destroy_at(slot);
