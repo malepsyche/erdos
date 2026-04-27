@@ -20,7 +20,7 @@ class SyntheticMarketDataSource {
   void run() {
     while (running_) {
       MarketEvent event = generate_next_event();
-      while (!ring_buffer_.try_push(event)) {}
+      ring_buffer_.try_push(event);
     }
   }
 
