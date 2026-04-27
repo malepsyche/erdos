@@ -28,7 +28,7 @@ class SPSCRingBuffer {
         increment(head);
       }
     }
-  };
+  }
 
   SPSCRingBuffer(const SPSCRingBuffer&) = delete;
   SPSCRingBuffer& operator=(const SPSCRingBuffer&) = delete;
