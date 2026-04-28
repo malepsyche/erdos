@@ -18,7 +18,7 @@ struct LogEvent {
   LogStage stage;
 
   union {
-    MarketEventLog market_event_log;
+    MarketEvent market_event;
   };
 };
 
