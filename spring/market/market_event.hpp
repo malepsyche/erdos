@@ -44,5 +44,9 @@ struct MarketEvent {
   };
 };
 
+struct MarketEventLog {
+  MarketEvent market_event;
+};
+
 } // namespace spring
 } // namespace euclid
