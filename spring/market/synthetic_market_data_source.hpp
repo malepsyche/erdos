@@ -1,7 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
 #include "spring/common/ring_buffer.hpp"
 #include "spring/market/market_event.hpp"
+#include "spring/common/log_event.hpp"
 
 namespace euclid {
 namespace spring {
@@ -9,7 +12,11 @@ namespace spring {
 template <std::size_t Capacity>
 class SyntheticMarketDataSource {
  public:
-  explicit SyntheticMarketDataSource(SPSCRingBuffer<MarketEvent, Capacity>& event_rb) : event_rb_(event_rb) {}
+  explicit SyntheticMarketDataSource(
+    SPSCRingBuffer<MarketEvent, Capacity>& market_event_rb,
+    SPSCRingBuffer<LogEvent, Capacity>& market_event_log_rb) 
+    : market_event_rb_(market_event_rb),
+      market_event_log_rb_(market_event_log_rb) {}
   ~SyntheticMarketDataSource() = default;
 
   SyntheticMarketDataSource(const SyntheticMarketDataSource&) = delete;
@@ -20,7 +27,7 @@ class SyntheticMarketDataSource {
   void run() {
     while (running_) {
       MarketEvent event = generate_next_event();
-      event_rb_.try_push(event);
+      while (!market_event_rb_.try_push(event)) {};
     }
   }
 
@@ -29,7 +36,8 @@ class SyntheticMarketDataSource {
   }
 
  private:
-  SPSCRingBuffer<MarketEvent, Capacity>& event_rb_;
+  SPSCRingBuffer<MarketEvent, Capacity>& market_event_rb_;
+  SPSCRingBuffer<LogEvent, Capacity>& market_event_log_rb;
 
   bool running_ = true;
 
