@@ -9,7 +9,7 @@ namespace spring {
 template <std::size_t Capacity>
 class SyntheticMarketDataSource {
  public:
-  explicit SyntheticMarketDataSource(SPSCRingBuffer<MarketEvent, Capacity>& ring_buffer) : ring_buffer_(ring_buffer) {}
+  explicit SyntheticMarketDataSource(SPSCRingBuffer<MarketEvent, Capacity>& event_rb) : event_rb_(event_rb) {}
   ~SyntheticMarketDataSource() = default;
 
   SyntheticMarketDataSource(const SyntheticMarketDataSource&) = delete;
@@ -20,7 +20,7 @@ class SyntheticMarketDataSource {
   void run() {
     while (running_) {
       MarketEvent event = generate_next_event();
-      ring_buffer_.try_push(event);
+      event_rb_.try_push(event);
     }
   }
 
@@ -29,7 +29,7 @@ class SyntheticMarketDataSource {
   }
 
  private:
-  SPSCRingBuffer<MarketEvent, Capacity>& ring_buffer_;
+  SPSCRingBuffer<MarketEvent, Capacity>& event_rb_;
 
   bool running_ = true;
 
