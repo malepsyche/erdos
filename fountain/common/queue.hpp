@@ -11,7 +11,7 @@ namespace fountain {
 template <typename T>
 class ConcurrentBoundedQueue {
  public:
-  ConcurrentBoundedQueue(size_t bound = 0) : bound_(bound), killed_(false) {}
+  explicit ConcurrentBoundedQueue(size_t bound = 0) : bound_(bound), killed_(false) {}
 
   void set_bound(size_t bound) { bound_ = bound; }
 
