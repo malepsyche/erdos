@@ -23,7 +23,6 @@ class Logger {
   Logger& operator=(const Logger&) = delete;
   Logger(Logger&&) = delete;
   Logger& operator=(Logger&&) = delete;
-
   
   inline void push_log_event(const MarketEvent& market_event) {
     LogEvent log_event{};
