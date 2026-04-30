@@ -2,22 +2,23 @@
 
 #include <cstdint>
 
-#include "spring/common/ring_buffer.hpp"
-#include "spring/market/market_event.hpp"
-#include "spring/common/log_event.hpp"
 #include "spring/common/clock.hpp"
+#include "spring/common/logger.hpp"
+#include "spring/common/ring_buffer.hpp"
+
+#include "spring/market/market_event.hpp"
 
 namespace euclid {
 namespace spring {
 
-template <std::size_t Capacity>
+template <std::size_t EventBufferCapacity, std::size_t LogBufferCapacity>
 class SyntheticMarketDataSource {
  public:
   explicit SyntheticMarketDataSource(
-    SPSCRingBuffer<MarketEvent, Capacity>& market_event_rb,
-    SPSCRingBuffer<LogEvent, Capacity>& log_event_rb) 
+    SPSCRingBuffer<MarketEvent, EventBufferCapacity>& market_event_rb,
+    Logger<LogBufferCapacity>& logger) 
     : market_event_rb_(market_event_rb),
-      log_event_rb_(log_event_rb) {}
+      logger_(logger) {}
   ~SyntheticMarketDataSource() = default;
 
   SyntheticMarketDataSource(const SyntheticMarketDataSource&) = delete;
@@ -32,9 +33,8 @@ class SyntheticMarketDataSource {
       while (running_ && !market_event_rb_.try_push(market_event)) {
 
       }
-      
-      LogEvent log_event = generate_log_event(market_event); 
-      log_event_rb_.try_push(log_event);
+
+      logger_.push_log_event(market_event);      
     }
   }
 
@@ -43,12 +43,11 @@ class SyntheticMarketDataSource {
   }
 
  private:
-  SPSCRingBuffer<MarketEvent, Capacity>& market_event_rb_;
-  SPSCRingBuffer<LogEvent, Capacity>& log_event_rb_;
-
+  SPSCRingBuffer<MarketEvent, EventBufferCapacity>& market_event_rb_;
+  Logger<LogBufferCapacity>& logger_;
+  
   bool running_ = true;
 
-  std::uint64_t producer_id_ = 0;
   std::uint64_t seq_no_ = 0;          
   InstrumentId instrument_id_ = 0;
   EventType event_type_ = EventType::Quote;
@@ -80,18 +79,6 @@ class SyntheticMarketDataSource {
     };
     
     return market_event;
-  }
-
-  LogEvent generate_log_event(const MarketEvent& market_event) {
-    LogEvent log_event{};
-
-    log_event.log_ts_ns = Clock::now_ns();
-    log_event.seq_no = market_event.seq_no;
-    log_event.producer_id = producer_id_;
-    log_event.stage = LogStage::MarketGenerated;
-    log_event.market_event = market_event;
-
-    return log_event;
   }
 };
 
