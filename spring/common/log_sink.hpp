@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "spring/common/log_event.hpp"
+#include "spring/common/event_log.hpp"
 #include "spring/common/ring_buffer.hpp"
 
 namespace euclid {
@@ -19,9 +19,9 @@ class LogSink {
  
  public:
   explicit LogSink(
-    SPSCRingBuffer<LogEvent, Capacity>& log_event_rb,
+    SPSCRingBuffer<EventLog, Capacity>& event_log_rb,
     const char* file_path)
-    : log_event_rb_(log_event_rb) {
+    : event_log_rb_(event_log_rb) {
       fd_ = ::open(
         file_path,
         O_CREAT | O_WRONLY | O_TRUNC,
@@ -60,27 +60,27 @@ class LogSink {
   }
 
  private:
-  SPSCRingBuffer<LogEvent, Capacity>& log_event_rb_;
-  std::array<LogEvent, BatchSize> batch_{};
+  SPSCRingBuffer<EventLog, Capacity>& event_log_rb_;
+  std::array<EventLog, BatchSize> batch_{};
 
   std::atomic<bool> running_{true};
   int fd_ = -1;
 
   std::size_t drain_batch() {
     std::size_t n = 0;
-    while (n < BatchSize && log_event_rb_.try_pop(batch_[n])) {
+    while (n < BatchSize && event_log_rb_.try_pop(batch_[n])) {
       ++n;
     }
     return n;
   }
 
-  void write_batch(const LogEvent* log_events, std::size_t n) {
+  void write_batch(const EventLog* event_logs, std::size_t n) {
     if (fd_ < 0 || n == 0) {
       return;
     }
 
-    const char* data = reinterpret_cast<const char*>(log_events);
-    std::size_t bytes_left = n * sizeof(LogEvent);
+    const char* data = reinterpret_cast<const char*>(event_logs);
+    std::size_t bytes_left = n * sizeof(EventLog);
 
     while (bytes_left > 0) {
       const ssize_t written_bytes = ::write(fd_, data, bytes_left);
