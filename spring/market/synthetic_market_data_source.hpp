@@ -12,12 +12,12 @@
 namespace euclid {
 namespace spring {
 
-template <std::size_t EventBufferCapacity, std::size_t LogBufferCapacity>
+template <std::size_t EventCapacity, std::size_t LogCapacity>
 class SyntheticMarketDataSource {
  public:
   explicit SyntheticMarketDataSource(
-    SPSCRingBuffer<MarketEvent, EventBufferCapacity>& market_event_rb,
-    Logger<LogBufferCapacity>& logger) 
+    SPSCRingBuffer<MarketEvent, EventCapacity>& market_event_rb,
+    Logger<LogCapacity>& logger) 
     : market_event_rb_(market_event_rb),
       logger_(logger) {}
   ~SyntheticMarketDataSource() = default;
@@ -47,8 +47,8 @@ class SyntheticMarketDataSource {
   }
 
  private:
-  SPSCRingBuffer<MarketEvent, EventBufferCapacity>& market_event_rb_;
-  Logger<LogBufferCapacity>& logger_;
+  SPSCRingBuffer<MarketEvent, EventCapacity>& market_event_rb_;
+  Logger<LogCapacity>& logger_;
   
   std::atomic<bool> running_{true};
 
