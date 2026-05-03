@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 
 #include "spring/common/clock.hpp"
@@ -27,10 +28,13 @@ class SyntheticMarketDataSource {
   SyntheticMarketDataSource& operator=(SyntheticMarketDataSource&&) = delete;
 
   void run() {
-    while (running_) {
+    while (running_.load(std::memory_order_relaxed)) {
       MarketEvent market_event = generate_market_event();
       
-      while (running_ && !market_event_rb_.try_push(market_event)) {
+      while (
+        running_.load(std::memory_order_relaxed) && 
+        !market_event_rb_.try_push(market_event)
+      ) {
 
       }
 
@@ -39,14 +43,14 @@ class SyntheticMarketDataSource {
   }
 
   void stop() {
-    running_ = false;
+    running_.store(false, std::memory_order_relaxed);
   }
 
  private:
   SPSCRingBuffer<MarketEvent, EventBufferCapacity>& market_event_rb_;
   Logger<LogBufferCapacity>& logger_;
   
-  bool running_ = true;
+  std::atomic<bool> running_{true};
 
   std::uint64_t seq_no_ = 0;          
   InstrumentId instrument_id_ = 0;
