@@ -15,8 +15,10 @@ template <std::size_t Capacity>
 class Logger {
  public:
   explicit Logger(
-    SPSCRingBuffer<EventLog, Capacity>& event_log_rb)
-    : event_log_rb_(event_log_rb) {}
+    SPSCRingBuffer<EventLog, Capacity>& event_log_rb,
+    std::uint64_t producer_id)
+    : event_log_rb_(event_log_rb),
+      producer_id_(producer_id) {}
   ~Logger() = default;
     
   Logger(const Logger&) = delete;
