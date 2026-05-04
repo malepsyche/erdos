@@ -45,7 +45,7 @@ class SPSCRingBuffer {
     }
 
     T* slot = ptr_at(tail);
-    std::construct_at(slot, std::forward<U>(value));
+    std::__construct_at(slot, std::forward<U>(value));
 
     tail_.store(next, std::memory_order_release);
     return true;
