@@ -38,7 +38,7 @@ class SyntheticMarketDataSource {
 
       }
 
-      logger_.push_log_event(market_event);      
+      logger_.push_event_log(market_event);      
     }
   }
 
