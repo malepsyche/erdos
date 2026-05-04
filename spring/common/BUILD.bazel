@@ -1,0 +1,13 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+cc_library(
+    name = "common",
+    hdrs = [
+        "clock.hpp",
+        "event_log.hpp",
+        "log_sink.hpp",
+        "logger.hpp",
+        "ring_buffer.hpp",
+    ],
+    visibility = ["//visibility:public"],
+)
