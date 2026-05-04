@@ -2,12 +2,12 @@
 
 #include <thread>
 
-#include <spring/common/event_log.hpp>
-#include <spring/common/log_sink.hpp>
-#include <spring/common/logger.hpp>
-#include <spring/common/ring_buffer.hpp>
-#include <spring/market/market_event.hpp>
-#include <spring/market/synthetic_market_data_source.hpp>
+#include "spring/common/event_log.hpp"
+#include "spring/common/log_sink.hpp"
+#include "spring/common/logger.hpp"
+#include "spring/common/ring_buffer.hpp"
+#include "spring/market/market_event.hpp"
+#include "spring/market/synthetic_market_data_source.hpp"
 
 namespace euclid {
 namespace spring {
