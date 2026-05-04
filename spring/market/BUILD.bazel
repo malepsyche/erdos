@@ -1,0 +1,13 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+cc_library(
+    name = "market",
+    hdrs = [
+        "market_event.hpp",
+        "synthetic_market_data_source.hpp",
+    ],
+    deps = [
+        "//spring/common:common",
+    ],
+    visibility = ["//visibility:public"],
+)
