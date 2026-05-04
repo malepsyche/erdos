@@ -1,0 +1,25 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+
+cc_library(
+    name = "runtime",
+    hdrs = [
+        "runtime.hpp",
+    ],
+    deps = [
+        "//spring/common:common",
+        "//spring/market:market",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "runtime_main",
+    srcs = ["runtime_main.cpp"],
+    deps = [":runtime"],
+    copts = [
+        "-DEVENT_CAPACITY=1024",
+        "-DEVENT_LOG_CAPACITY=8192",
+        "-DEVENT_LOG_BATCH_SIZE=256",
+    ],
+)
