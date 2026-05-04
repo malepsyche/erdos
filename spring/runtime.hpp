@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <thread>
 
 #include <spring/common/event_log.hpp>
