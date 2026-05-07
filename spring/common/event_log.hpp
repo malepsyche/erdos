@@ -1,13 +1,14 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include "spring/market/market_event.hpp"
 
 namespace euclid {
 namespace spring {
 
-enum class LogStage : std::uint8_t {
+enum struct LogStage : std::uint8_t {
   MarketGenerated = 0
 };
 
@@ -21,6 +22,9 @@ struct EventLog {
     MarketEvent market_event;
   };
 };
+
+static_assert(std::is_trivially_copyable_v<EventLog>);
+static_assert(std::is_standard_layout_v<EventLog>);
 
 } // namespace spring
 } // namespace euclid
