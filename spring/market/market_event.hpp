@@ -9,12 +9,12 @@ using InstrumentId = std::uint32_t;
 using Price        = std::int64_t;   
 using Quantity     = std::int64_t;
 
-enum class EventType : std::uint8_t {
+enum struct EventType : std::uint8_t {
   Quote = 0,
   Trade = 1
 };
 
-enum class Side : std::uint8_t {
+enum struct Side : std::uint8_t {
   Buy = 0,
   Sell = 1,
 };
