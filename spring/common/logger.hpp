@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
 #include "spring/common/clock.hpp"
 #include "spring/common/event_log.hpp"
@@ -13,6 +14,9 @@ namespace spring {
 
 template <std::size_t Capacity>
 class Logger {
+ static_assert(std::is_trivially_copyable_v<EventLog>);
+ static_assert(std::is_standard_layout_v<EventLog>);
+ 
  public:
   explicit Logger(
     SPSCRingBuffer<EventLog, Capacity>& event_log_rb,
@@ -26,15 +30,11 @@ class Logger {
   Logger(Logger&&) = delete;
   Logger& operator=(Logger&&) = delete;
   
-  inline void push_event_log(const MarketEvent& market_event) {
+  template <typename Payload>
+  inline void log(const Payload& payload) {
     EventLog event_log{};
-
-    event_log.log_ts_ns = Clock::now_ns();
-    event_log.seq_no = market_event.seq_no;
-    event_log.producer_id = producer_id_;
-    event_log.stage = LogStage::MarketGenerated;
-    event_log.market_event = market_event;
-
+    make_event_log(payload, event_log);
+    
     if (!event_log_rb_.try_push(event_log)) {
       ++dropped_;
     }
@@ -42,6 +42,15 @@ class Logger {
 
   std::uint64_t dropped() const {
     return dropped_;
+  }
+
+ private:
+  inline void make_event_log(const MarketEvent& market_event, EventLog& event_log) const {
+    event_log.log_ts_ns = Clock::now_ns();
+    event_log.seq_no = market_event.seq_no;
+    event_log.producer_id = producer_id_;
+    event_log.stage = LogStage::MarketGenerated;
+    event_log.market_event = market_event;
   }
   
  private:   
