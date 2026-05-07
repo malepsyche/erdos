@@ -20,10 +20,10 @@ class LogSink {
  public:
   explicit LogSink(
     SPSCRingBuffer<EventLog, Capacity>& event_log_rb,
-    const char* file_path)
+    const char* log_bin_path)
     : event_log_rb_(event_log_rb) {
       fd_ = ::open(
-        file_path,
+        log_bin_path,
         O_CREAT | O_WRONLY | O_TRUNC,
         0644);
     }

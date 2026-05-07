@@ -4,11 +4,11 @@
 #include "spring/runtime.hpp"
 
 int main(int argc, char** argv) {
-  const char* file_path = argc > 1 ? argv[1] : "/tmp/pipeline_log.bin";
+  const char* log_bin_path = argc > 1 ? argv[1] : "/tmp/pipeline_log.bin";
 
   euclid::spring::Runtime<EVENT_CAPACITY,
                           EVENT_LOG_CAPACITY,
-                          EVENT_LOG_BATCH_SIZE> runtime(file_path);
+                          EVENT_LOG_BATCH_SIZE> runtime(log_bin_path);
 
   runtime.start();
   

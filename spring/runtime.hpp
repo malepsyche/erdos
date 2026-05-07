@@ -18,9 +18,9 @@ template <std::size_t EventCapacity,
 class Runtime {
  public:
   explicit Runtime(
-    const char* file_path
+    const char* log_bin_path
   ) : event_logger_(event_log_rb_, 0),
-      event_log_sink_(event_log_rb_, file_path),
+      event_log_sink_(event_log_rb_, log_bin_path),
       synthetic_market_data_source_(market_event_rb_, event_logger_) {}
   ~Runtime() {
     stop();
