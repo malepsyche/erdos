@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <fcntl.h>
+#include <sched.h>
 #include <unistd.h>
 
 #include "spring/common/event_log.hpp"
@@ -28,8 +29,6 @@ class LogSink {
         0644);
     }
   ~LogSink() {
-    flush_remaining();
-
     if (fd_ >= 0) {
       ::close(fd_);
     }
