@@ -6,6 +6,7 @@
 
 namespace euclid {
 namespace prism {
+
 class Runtime {
  public:
   Runtime(
