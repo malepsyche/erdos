@@ -4,8 +4,9 @@
 #include <type_traits>
 
 #include "spring/common/clock.hpp"
-#include "spring/common/event_log.hpp"
 #include "spring/common/ring_buffer.hpp"
+
+#include "spring/logging/event_log.hpp"
 
 #include "spring/market/market_event.hpp"
 

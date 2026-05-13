@@ -8,8 +8,8 @@
 #include <sched.h>
 #include <unistd.h>
 
-#include "spring/common/event_log.hpp"
 #include "spring/common/ring_buffer.hpp"
+#include "spring/logging/event_log.hpp"
 
 namespace euclid {
 namespace spring {

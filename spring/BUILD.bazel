@@ -2,13 +2,14 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
 cc_library(
-    name = "runtime",
+    name = "spring_runtime",
     hdrs = [
         "runtime.hpp",
     ],
     deps = [
-        "//spring/common:common",
-        "//spring/market:market",
+        "//spring/common:spring_common",
+        "//spring/logging:spring_logging",
+        "//spring/market:spring_market",
     ],
     visibility = ["//visibility:public"],
 )
@@ -16,7 +17,7 @@ cc_library(
 cc_binary(
     name = "runtime_main",
     srcs = ["runtime_main.cpp"],
-    deps = [":runtime"],
+    deps = [":spring_runtime"],
     copts = [
         "-DEVENT_CAPACITY=1024",
         "-DEVENT_LOG_CAPACITY=8192",

@@ -8,7 +8,7 @@
 #include <thread>
 #include <unistd.h>
 
-#include "spring/common/event_log.hpp"
+#include "spring/logging/event_log.hpp"
 
 namespace euclid {
 namespace prism {

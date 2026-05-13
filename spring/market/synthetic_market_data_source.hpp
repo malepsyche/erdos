@@ -4,8 +4,9 @@
 #include <cstdint>
 
 #include "spring/common/clock.hpp"
-#include "spring/common/logger.hpp"
 #include "spring/common/ring_buffer.hpp"
+
+#include "spring/logging/logger.hpp"
 
 #include "spring/market/market_event.hpp"
 

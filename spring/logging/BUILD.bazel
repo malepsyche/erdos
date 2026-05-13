@@ -1,13 +1,15 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_library(
-    name = "spring_market",
+    name = "spring_logging",
     hdrs = [
-        "market_event.hpp",
-        "synthetic_market_data_source.hpp",
+        "event_log.hpp",
+        "log_sink.hpp",
+        "logger.hpp",
     ],
     deps = [
         "//spring/common:spring_common",
+        "//spring/market:spring_market",
     ],
     visibility = ["//visibility:public"],
 )
