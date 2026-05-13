@@ -1,0 +1,20 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+
+cc_library(
+    name = "prism_runtime",
+    hdrs = [
+        "log_dumper.hpp",
+        "runtime.hpp",
+    ],
+    deps = [
+        "//spring/logging:spring_logging",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "runtime_main",
+    srcs = ["runtime_main.cpp"],
+    deps = [":prism_runtime"],
+)
