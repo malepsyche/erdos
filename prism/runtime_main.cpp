@@ -1,11 +1,17 @@
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 #include "prism/runtime.hpp"
 
 int main(int argc, char** argv) {
-  const char* log_bin_path = argc > 1 ? argv[1] : "/tmp/pipeline_log.bin";
-  const char* log_txt_path = argc > 2 ? argv[2] : "/tmp/pipeline_txt.bin";
+  if (argc < 3) {
+    std::cerr << "usage: runtime_main <log_bin_path> <log_txt_path>\n";
+    return 1;
+  }
+
+  const char* log_bin_path = argv[1];
+  const char* log_txt_path = argv[2];
 
   euclid::prism::Runtime runtime(log_bin_path, log_txt_path);
 
