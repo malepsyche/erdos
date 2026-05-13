@@ -1,10 +1,16 @@
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 #include "spring/runtime.hpp"
 
 int main(int argc, char** argv) {
-  const char* log_bin_path = argc > 1 ? argv[1] : "/tmp/pipeline_log.bin";
+  if (argc < 2) {
+    std::cerr << "usage: runtime_main <log_bin_path> \n";
+    return 1;
+  }
+
+  const char* log_bin_path = argv[1];
 
   euclid::spring::Runtime<EVENT_CAPACITY,
                           EVENT_LOG_CAPACITY,
