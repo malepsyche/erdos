@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <type_traits>
 #include <unistd.h>
 
 #include "conduit/udp_socket_cfg.hpp"
@@ -101,17 +102,17 @@ class UdpSocket {
   }
 
   bool bind_socket() noexcept {
-    ssize_t n = ::bind(
+    int rc = ::bind(
       fd_, 
       reinterpret_cast<const sockaddr*>(&local_addr_), 
       sizeof(local_addr_)
     );
 
-    return (n == 0);
+    return rc == 0;
   }
 
   bool join_group() noexcept {
-    ssize_t n = ::setsockopt(
+    int rc = ::setsockopt(
         fd_,
         IPPROTO_IP,
         IP_ADD_MEMBERSHIP,
@@ -119,7 +120,7 @@ class UdpSocket {
         sizeof(mreq_)
     );
 
-    return (n == 0);
+    return rc == 0;
   }
 };
 
