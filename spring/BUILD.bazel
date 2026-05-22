@@ -7,7 +7,7 @@ cc_library(
         "runtime.hpp",
     ],
     deps = [
-        "//spring/common:spring_common",
+        "//common:common",
         "//spring/logging:spring_logging",
         "//spring/market:spring_market",
     ],

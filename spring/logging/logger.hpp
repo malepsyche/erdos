@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "spring/common/clock.hpp"
-#include "spring/common/ring_buffer.hpp"
+#include "common/clock.hpp"
+#include "common/ring_buffer.hpp"
 
 #include "spring/logging/event_log.hpp"
 

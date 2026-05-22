@@ -2,7 +2,7 @@
 
 #include <thread>
 
-#include "spring/common/ring_buffer.hpp"
+#include "common/ring_buffer.hpp"
 
 #include "spring/logging/event_log.hpp"
 #include "spring/logging/log_sink.hpp"
