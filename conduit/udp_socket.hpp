@@ -13,6 +13,9 @@ namespace conduit {
 
 template <typename Packet>
 class UdpSocket {
+ static_assert(std::is_trivially_copyable_v<Packet>);
+ static_assert(std::is_standard_layout_v<Packet>);
+
  public:
   explicit UdpSocket(UdpSocketCfg cfg) : cfg_(cfg) {}
   ~UdpSocket() {
@@ -38,7 +41,7 @@ class UdpSocket {
     const ssize_t n = ::sendto(
       fd_,
       &pkt,
-      sizeof(pkt),
+      sizeof(Packet),
       0,
       reinterpret_cast<const sockaddr*>(&dest_addr_),
       sizeof(dest_addr_)
@@ -51,7 +54,7 @@ class UdpSocket {
     const ssize_t n = ::recvfrom(
       fd_,
       &pkt,
-      sizeof(pkt),
+      sizeof(Packet),
       0,
       nullptr,
       nullptr
@@ -71,24 +74,25 @@ class UdpSocket {
 
  private:
   bool populate_addresses() noexcept {
-    // populate local address
+    // used to ::bind
     local_addr_.sin_family = AF_INET;
     local_addr_.sin_port = htons(cfg_.port);
     if (::inet_pton(AF_INET, cfg_.bind_ip, &local_addr_.sin_addr) != 1) {
       return false;
     }
     
-    // populate dest address
+    // used to send_packet()
     dest_addr_.sin_family = AF_INET;
     dest_addr_.sin_port = htons(cfg_.port);
     if (::inet_pton(AF_INET, cfg_.group_ip, &dest_addr_.sin_addr) != 1) {
       return false;
     }
 
-    // populate network interface ip, multicast group membership
+    // local interface ip
     if (::inet_pton(AF_INET, cfg_.bind_ip, &mreq_.imr_interface) != 1) {
       return false;
     }
+    // multicast group membership
     if (::inet_pton(AF_INET, cfg_.group_ip, &mreq_.imr_multiaddr) != 1) {
       return false;
     }
