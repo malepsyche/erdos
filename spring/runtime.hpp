@@ -2,14 +2,7 @@
 
 #include <thread>
 
-#include "common/ring_buffer.hpp"
-
-#include "spring/logging/event_log.hpp"
-#include "spring/logging/log_sink.hpp"
-#include "spring/logging/logger.hpp"
-
-#include "spring/market/market_event.hpp"
-#include "spring/market/synthetic_market_data_source.hpp"
+#include "spring/market/synthetic_market_data_runtime.hpp"
 
 namespace euclid {
 namespace spring {
@@ -21,9 +14,7 @@ class Runtime {
  public:
   explicit Runtime(
     const char* log_bin_path
-  ) : event_logger_(event_log_rb_, 0),
-      event_log_sink_(event_log_rb_, log_bin_path),
-      synthetic_market_data_source_(market_event_rb_, event_logger_) {}
+  ) : synthetic_market_data_runtime_(log_bin_path) {}
   ~Runtime() {
     stop();
     join();
@@ -35,39 +26,19 @@ class Runtime {
   Runtime& operator=(Runtime&&) = delete;
 
   void start() {
-    event_thread_ = std::thread([this] {
-      synthetic_market_data_source_.run();
-    });
-
-    event_log_sink_thread_ = std::thread([this] {
-      event_log_sink_.run();
-    });
+    synthetic_market_data_runtime_.start();
   }
 
   void stop() {
-    synthetic_market_data_source_.stop();
-    event_log_sink_.stop();
+    synthetic_market_data_runtime_.stop();
   }
 
   void join() {
-    if (event_thread_.joinable()) {
-      event_thread_.join();
-    }
-    if (event_log_sink_thread_.joinable()) {
-      event_log_sink_thread_.join();
-    }
+    synthetic_market_data_runtime_.join();
   }
 
  private:
-  SPSCRingBuffer<MarketEvent, EventCapacity> market_event_rb_;
-  SPSCRingBuffer<EventLog, EventLogCapacity> event_log_rb_;
-  
-  Logger<EventLogCapacity> event_logger_;
-  LogSink<EventLogCapacity, EventLogBatchSize> event_log_sink_;
-  SyntheticMarketDataSource<EventCapacity, EventLogCapacity> synthetic_market_data_source_;
-
-  std::thread event_thread_;
-  std::thread event_log_sink_thread_;
+  SyntheticMarketDataRuntime<EventCapacity, EventLogCapacity, EventLogBatchSize> synthetic_market_data_runtime_;
 };
 
 } // namespace spring

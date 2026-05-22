@@ -5,6 +5,7 @@ cc_library(
     hdrs = [
         "market_event.hpp",
         "synthetic_market_data_source.hpp",
+        "synthetic_market_data_runtime.hpp",
     ],
     deps = [
         "//common:common",
