@@ -8,7 +8,7 @@ cc_library(
         "logger.hpp",
     ],
     deps = [
-        "//spring/common:spring_common",
+        "//common:common",
         "//spring/market:spring_market",
     ],
     visibility = ["//visibility:public"],
