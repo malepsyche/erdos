@@ -8,15 +8,11 @@
 #include <thread>
 #include <unistd.h>
 
-#include "spring/logging/event_log.hpp"
-
 namespace euclid {
 namespace prism {
 
-using EventLog = euclid::spring::EventLog;
-using LogStage = euclid::spring::LogStage;
-
-class LogDumper {
+template <typename EventLog, typename EventLogFormatter>  
+class LogDumper {  
  public:
   explicit LogDumper(
     const char* log_bin_path,
@@ -65,7 +61,7 @@ class LogDumper {
       }
 
       event_log_str.clear();
-      format_event_log(event_log, event_log_str);
+      event_log_formatter_.format_event_log(event_log, event_log_str);
       
       if (!write_one(event_log_str)) {
         break;
@@ -81,6 +77,8 @@ class LogDumper {
   std::atomic<bool> running_{true};
   int log_bin_fd_ = -1;
   int log_txt_fd_ = -1;
+
+  EventLogFormatter event_log_formatter_;
   
   inline bool assert_fds() const {
     return (log_bin_fd_ >= 0) && (log_txt_fd_ >= 0);
@@ -139,24 +137,6 @@ class LogDumper {
     return true;
   }
 
-  inline void format_event_log(const EventLog& event_log, std::string& event_log_str) const {
-    event_log_str += (
-      "log_ts_ns = " + std::to_string(event_log.log_ts_ns) +
-      " seq_no = " + std::to_string(event_log.seq_no) + 
-      " producer_id = " + std::to_string(event_log.producer_id) + 
-      " log_stage = " + to_string(event_log.stage) + 
-      "\n"
-    );
-  }
-
-  inline const char* to_string(const LogStage log_stage) const {
-    switch (log_stage) {
-      case(LogStage::MarketGenerated):
-        return "MarketGenerated";
-      default:
-        return "NIL_STAGE";
-    }
-  }
 };
 
 } // namespace prism

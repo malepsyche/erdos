@@ -2,7 +2,11 @@
 
 #include <thread>
 
-#include "prism/log_dumper.hpp"
+#include "spring/market/market_event.hpp"
+#include "spring/logging/event_log.hpp"
+#include "spring/logging/event_log_formatter.hpp"
+
+#include "logging/log_dumper.hpp"
 
 namespace euclid {
 namespace prism {
@@ -12,25 +16,25 @@ class Runtime {
   Runtime(
     const char* log_bin_path,
     const char* log_txt_path
-  ) : log_dumper_(log_bin_path, log_txt_path) {}
+  ) : market_log_dumper_(log_bin_path, log_txt_path) {}
   ~Runtime() {
     stop();
     join();
   }
 
   void start() {
-    log_dumper_thread_ = std::thread([this] {
-      log_dumper_.run();
+    market_log_dumper_thread_ = std::thread([this] {
+      market_log_dumper_.run();
     });
   }
 
   void stop() {
-    log_dumper_.stop();
+    market_log_dumper_.stop();
   }
 
   void join() {
-    if (log_dumper_thread_.joinable()) {
-      log_dumper_thread_.join();
+    if (market_log_dumper_thread_.joinable()) {
+      market_log_dumper_thread_.join();
     }
   }
 
@@ -40,9 +44,11 @@ class Runtime {
   Runtime& operator=(Runtime&&) = delete;
 
  private:
-  LogDumper log_dumper_;
-
-  std::thread log_dumper_thread_;
+  using MarketEventLog = euclid::spring::EventLog<euclid::spring::MarketEvent>;
+  using MarketEventLogFormatter = euclid::spring::EventLogFormatter<MarketEventLog>;
+  using MarketLogDumper = LogDumper<MarketEventLog, MarketEventLogFormatter>;
+  MarketLogDumper market_log_dumper_;
+  std::thread market_log_dumper_thread_;
 };
 
 } // namespace prism

@@ -9,6 +9,8 @@ cc_library(
     ],
     deps = [
         "//common:common",
+        "//logging:logging",
+        "//spring/logging:spring_logging",
     ],
     visibility = ["//visibility:public"],
 )
