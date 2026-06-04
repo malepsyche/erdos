@@ -6,14 +6,11 @@
 #include "common/clock.hpp"
 #include "common/ring_buffer.hpp"
 
-#include "spring/logging/event_log.hpp"
-
-#include "spring/market/market_event.hpp"
-
 namespace euclid {
 namespace spring {
 
-template <std::size_t Capacity>
+template <typename EventLog,
+          std::size_t Capacity>
 class Logger {
  static_assert(std::is_trivially_copyable_v<EventLog>);
  static_assert(std::is_standard_layout_v<EventLog>);
@@ -31,10 +28,8 @@ class Logger {
   Logger(Logger&&) = delete;
   Logger& operator=(Logger&&) = delete;
   
-  template <typename Payload>
-  inline void log(const Payload& payload) {
-    EventLog event_log{};
-    make_event_log(payload, event_log);
+  inline void log(EventLog& event_log) {
+    build_event_log(event_log);
     
     if (!event_log_rb_.try_push(event_log)) {
       ++dropped_;
@@ -46,12 +41,9 @@ class Logger {
   }
 
  private:
-  inline void make_event_log(const MarketEvent& market_event, EventLog& event_log) const {
+  inline void build_event_log(EventLog& event_log) const {
     event_log.log_ts_ns = Clock::now_ns();
-    event_log.seq_no = market_event.seq_no;
     event_log.producer_id = producer_id_;
-    event_log.stage = LogStage::MarketGenerated;
-    event_log.market_event = market_event;
   }
   
  private:   

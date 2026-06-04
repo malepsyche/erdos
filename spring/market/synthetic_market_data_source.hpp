@@ -6,7 +6,9 @@
 #include "common/clock.hpp"
 #include "common/ring_buffer.hpp"
 
-#include "spring/logging/logger.hpp"
+#include "logging/logger.hpp"
+
+#include "spring/logging/event_log.hpp"
 
 #include "spring/market/market_event.hpp"
 
@@ -15,10 +17,13 @@ namespace spring {
 
 template <std::size_t EventCapacity, std::size_t LogCapacity>
 class SyntheticMarketDataSource {
+static_assert(std::is_trivially_copyable_v<EventLog<MarketEvent>>);
+static_assert(std::is_standard_layout_v<EventLog<MarketEvent>>);
+
  public:
   explicit SyntheticMarketDataSource(
     SPSCRingBuffer<MarketEvent, EventCapacity>& market_event_rb,
-    Logger<LogCapacity>& logger) 
+    Logger<EventLog<MarketEvent>, LogCapacity>& logger) 
     : market_event_rb_(market_event_rb),
       logger_(logger) {}
   ~SyntheticMarketDataSource() = default;
@@ -30,7 +35,8 @@ class SyntheticMarketDataSource {
 
   void run() {
     while (running_.load(std::memory_order_relaxed)) {
-      MarketEvent market_event = generate_market_event();
+      MarketEvent market_event{};
+      generate_market_event(market_event);
       
       while (
         running_.load(std::memory_order_relaxed) && 
@@ -39,7 +45,9 @@ class SyntheticMarketDataSource {
 
       }
 
-      logger_.log(market_event);      
+      EventLog<MarketEvent> event_log{};
+      make_event_log(market_event, event_log);
+      logger_.log(event_log);      
     }
   }
 
@@ -49,7 +57,7 @@ class SyntheticMarketDataSource {
 
  private:
   SPSCRingBuffer<MarketEvent, EventCapacity>& market_event_rb_;
-  Logger<LogCapacity>& logger_;
+  Logger<EventLog<MarketEvent>, LogCapacity>& logger_;
   
   std::atomic<bool> running_{true};
 
@@ -66,9 +74,7 @@ class SyntheticMarketDataSource {
   Quantity trade_size_ = 0;
   Side aggressor_side_ = Side::Buy;
 
-  MarketEvent generate_market_event() {
-    MarketEvent market_event{};
-    
+  inline void generate_market_event(MarketEvent& market_event) {    
     const auto now = Clock::now_ns();
 
     market_event.seq_no = ++seq_no_;
@@ -82,8 +88,11 @@ class SyntheticMarketDataSource {
       .bid_size = bid_size_,
       .ask_size = ask_size_
     };
-    
-    return market_event;
+  }
+
+  inline void make_event_log(const MarketEvent& market_event, EventLog<MarketEvent>& event_log) {
+      event_log.event_stage = EventStage::MarketGenerated;
+      event_log.event_payload = market_event;
   }
 };
 

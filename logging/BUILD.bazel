@@ -1,12 +1,14 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 cc_library(
-    name = "spring_logging",
+    name = "logging",
     hdrs = [
-        "event_log_formatter.hpp",
-        "event_log.hpp",
+        "log_dumper.hpp",
+        "log_sink.hpp",
+        "logger.hpp",
     ],
     deps = [
+        "//common:common",
     ],
     visibility = ["//visibility:public"],
 )

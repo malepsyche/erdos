@@ -4,9 +4,10 @@
 
 #include "common/ring_buffer.hpp"
 
+#include "logging/log_sink.hpp"
+#include "logging/logger.hpp"
+
 #include "spring/logging/event_log.hpp"
-#include "spring/logging/log_sink.hpp"
-#include "spring/logging/logger.hpp"
 
 #include "spring/market/market_event.hpp"
 #include "spring/market/synthetic_market_data_source.hpp"
@@ -60,10 +61,10 @@ class SyntheticMarketDataRuntime {
 
  private:
   SPSCRingBuffer<MarketEvent, EventCapacity> event_rb_;
-  SPSCRingBuffer<EventLog, EventLogCapacity> event_log_rb_;
+  SPSCRingBuffer<EventLog<MarketEvent>, EventLogCapacity> event_log_rb_;
   
-  Logger<EventLogCapacity> logger_;
-  LogSink<EventLogCapacity, EventLogBatchSize> log_sink_;
+  Logger<EventLog<MarketEvent>, EventLogCapacity> logger_;
+  LogSink<EventLog<MarketEvent>, EventLogCapacity, EventLogBatchSize> log_sink_;
   
   SyntheticMarketDataSource<EventCapacity, EventLogCapacity> source_;
 

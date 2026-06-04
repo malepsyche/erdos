@@ -9,12 +9,13 @@
 #include <unistd.h>
 
 #include "common/ring_buffer.hpp"
-#include "spring/logging/event_log.hpp"
 
 namespace euclid {
 namespace spring {
 
-template <std::size_t Capacity, std::size_t BatchSize>
+template <typename EventLog,
+          std::size_t Capacity, 
+          std::size_t BatchSize>
 class LogSink {
  static_assert(BatchSize > 0, "BatchSize must be greater than 0");
  
